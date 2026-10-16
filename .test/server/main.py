@@ -1,4 +1,5 @@
 import uuid
+import asyncio
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,8 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 async def upload(
     file: UploadFile = File(...)
 ) -> dict[str, Any]:
+    await asyncio.sleep(1)      # имитация обработки
+
     ext = Path(file.filename).suffix.lower()
 
     saved_name = f"{uuid.uuid4().hex}{ext}"
