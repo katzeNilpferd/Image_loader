@@ -1,14 +1,16 @@
 from src.uploader import ImageUploader
+from src.config import load_config
 
 
 def main() -> None:
+    config = load_config()
     uploader = ImageUploader(
-        upload_url="http://127.0.0.1:8000/upload",
-        max_workers=4
+        upload_url=config.upload_url,
+        max_workers=config.max_workers
     )
 
     paths = uploader.collect_images(
-        images_dir="./images"
+        images_dir=config.images_dir
     )
     
     if not paths:
