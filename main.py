@@ -17,7 +17,7 @@ def main() -> None:
         print("No images found")
         return
 
-    print(f"Uploading {len(paths)} images with {4} workers")
+    print(f"Uploading {len(paths)} images with {config.max_workers} workers")
 
     for path, result in uploader.upload_all(paths):
         if isinstance(result, Exception):
