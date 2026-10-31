@@ -39,8 +39,15 @@ cp .env.example .env
 
    Скрипт создаст 20 JPG-файлов в папке `images/`.
 
-3. Запуск загрузчика:
+3. Запуск загрузчика (по умолчанию из .env UPLOADER_MODE=async):
 
    ```bash
    python main.py
+   ```
+
+   или явно через --mode:
+
+   ```bash
+   python main.py --mode sync
+   python main.py --mode async
    ```

@@ -19,5 +19,5 @@ def load_config() -> Config:
         upload_url=os.getenv("UPLOAD_URL", ""),
         max_concurrent=int(os.getenv("MAX_CONCURRENT", "4")),
         images_dir=os.getenv("IMAGES_DIR", "./images"),
-        mode=os.getenv("UPLOADER_MODE", "sync"),
+        mode=os.getenv("UPLOADER_MODE", "async"),
     )
