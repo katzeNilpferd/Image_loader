@@ -1,34 +1,23 @@
+from typing import Any
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
+from src.base_uploader import BaseSyncUploader
 
-class ImageUploader:
+
+class SyncImageUploader(BaseSyncUploader):
+    """Синхронный загрузчик картинок на пуле потоков."""
 
     IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
-    def __init__(
-        self,
-        upload_url: str,
-        max_workers: int
-    ):
-        self.upload_url = upload_url
-        self.max_workers = max_workers
 
-    def collect_images(self, images_dir: str) -> list[Path]:
-        folder = Path(images_dir)
-
-        return [
-            p for p in folder.iterdir()
-            if p.is_file() and p.suffix.lower() in self.IMAGE_EXTENSIONS
-        ]
-
-    def upload_all(self, paths: list[Path]) -> list[tuple[Path, object]]:
+    def upload(self, paths: list[Path]) -> list[tuple[Path, object]]:
         results: list[tuple[Path, object]] = []
 
         with requests.Session() as session:
-            with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
+            with ThreadPoolExecutor(max_workers=self.max_concurrent) as pool:
                 futures = {
                     pool.submit(self._upload_one, session, path): path
                     for path in paths
@@ -45,12 +34,12 @@ class ImageUploader:
     def _upload_one(
         self,
         session: requests.Session,
-        path: Path
-    ) -> dict:
+        path: Path,
+    ) -> dict[str, Any]:
         with open(path, "rb") as f:
             resp = session.post(
                 self.upload_url,
-                files={"file": f}
+                files={"file": f},
             )
             resp.raise_for_status()
             return resp.json()

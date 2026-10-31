@@ -1,32 +1,18 @@
 import asyncio
+from typing import Any
 from pathlib import Path
 
 import aiofiles
 import aiohttp
 
+from src.base_uploader import BaseAsyncUploader
 
-class AsyncImageUploader:
 
-    IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+class AsyncImageUploader(BaseAsyncUploader):
+    """Асинхронный загрузчик картинок на семафоре."""
 
-    def __init__(self, upload_url: str) -> None:
-        self.upload_url = upload_url
-
-    def collect_images(self, images_dir: str) -> list[Path]:
-        """Возвращает список файлов-картинок из папки."""
-        folder = Path(images_dir)
-
-        return [
-            p for p in folder.iterdir()
-            if p.is_file() and p.suffix.lower() in self.IMAGE_EXTENSIONS
-        ]
-
-    async def upload_all(
-        self,
-        paths: list[Path],
-        max_concurrent_uploads: int = 4,
-    ) -> list[tuple[Path, object]]:
-        semaphore = asyncio.Semaphore(max_concurrent_uploads)
+    async def upload(self, paths: list[Path]) -> list[tuple[Path, object]]:
+        semaphore = asyncio.Semaphore(self.max_concurrent)
 
         async with aiohttp.ClientSession() as session:
             tasks = [
@@ -52,7 +38,7 @@ class AsyncImageUploader:
         self,
         session: aiohttp.ClientSession,
         path: Path,
-    ) -> dict:
+    ) -> dict[str, Any]:
         async with aiofiles.open(path, "rb") as f:
             content = await f.read()
 
