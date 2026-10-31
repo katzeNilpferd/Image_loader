@@ -9,13 +9,15 @@ load_dotenv()
 @dataclass(frozen=True)
 class Config:
     upload_url: str
-    max_workers: int
+    max_concurrent: int
     images_dir: str
+    mode: str 
 
 
 def load_config() -> Config:
     return Config(
         upload_url=os.getenv("UPLOAD_URL", ""),
-        max_workers=int(os.getenv("MAX_WORKERS", "4")),
-        images_dir=os.getenv("IMAGES_DIR", "./images")
+        max_concurrent=int(os.getenv("MAX_CONCURRENT", "4")),
+        images_dir=os.getenv("IMAGES_DIR", "./images"),
+        mode=os.getenv("UPLOADER_MODE", "sync"),
     )
